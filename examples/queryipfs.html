@@ -1,0 +1,89 @@
+<html>
+<script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+
+<script src="http_queryipfs.js"></script>
+    <body>
+        <script>
+            this.q = new QueryIpfs();
+            //var PERSIST_IPFS_URL = 'ws://localhost:7071/retrieve'
+            //var PERSIST_IPFS_URL = 'ws://192.168.1.161:8080/ipfsproxy/retrieve'
+            //var PERSIST_IPFS_URL = 'ws://192.168.1.161:8080/retrieve'
+            //var PERSIST_IPFS_URL = 'ws://35.236.42.205:80/retrieve'
+            //var PERSIST_IPFS_URL = 'http://localhost:7071/retrieve'
+            var PERSIST_IPFS_URL = 'http://localhost:9090/fs/retrieve'
+            //var PERSIST_IPFS_URL = 'http://localhost:7073/api/v0/cat?arg='
+
+            const handleBuffer = async (dat) => {
+                console.log('handleBuffer ',dat);
+                let buff = await dat.arrayBuffer();
+                //is image or video?
+                var mime = await this.q.getMimeType(buff);
+                console.log('handleBuffer Mime type = ',mime);
+
+                let blob = new Blob([buff], { type: 'image/jpeg' });
+                let data = URL.createObjectURL(blob);
+                //console.log('Image ws onmessage img tmp: %s', data);
+                return {data, mime};
+            };
+
+            function dataCallback(event){
+                console.log('datacallback called event', event);
+                handleBuffer(event.data).then((media)=>{
+                    //is image or video?
+                    console.log('mime:',media.mime)
+                    if(media.mime.startsWith('image')){
+                        window.ipfsImage.src = media.data;
+                    }else if(media.mime.startsWith('video')){
+                        window.ipfsVideo.src = media.data;
+                    }
+                }).finally(()=>{
+                    // console.log('datacallback trigger q close');
+                    // this.q.close();
+                });
+
+                //handle.resolve();
+                console.log('datacallback resolved ');
+            };
+
+            function runquery() {
+                var parent = this;
+                class Qobserver extends Observer{
+                   eventIsRelevant(e) {
+                        console.log('eventIsRelevant = ',e);
+                        if(e.type=='isReady'){
+                            return true;
+                        }else
+                          return false;
+                   }//func
+
+                   reactToEvent(e) {
+                      console.log('reactToEvent = ',e);
+                        if(e.type=='isReady' && e.value==true){
+                          console.log('After timeout ready = ',parent.q);
+                          if(window.cid.value != null){
+                            console.log('calling query with value',
+                            window.cid.value);
+                            // make query call
+                            parent.q.query(window.cid.value, parent.dataCallback);
+                          }
+                        }
+                   } //func
+                }; //class
+
+                // Register observer before calling server
+                // The observer will wait for successful connection
+                // before making query.
+                this.q.addObserver(new Qobserver());
+
+                console.log('Is Ready = ',this.q.getIsReady());
+                // Make connection to server
+                this.q.connect(PERSIST_IPFS_URL);
+            }
+        </script>
+        <div>Enter CID</div>
+        <input id='cid' type="text" onchange="runquery()"/>
+        <img id='ipfsImage' style="width:128px;height:128px;border=1"/>
+        <video id='ipfsVideo' style="width:128px;height:128px;background-color=black;border=1" controls></video>
+    </body>
+
+</html>

@@ -1,0 +1,165 @@
+<html>
+    <!--
+      uploadipfs_compression.html — like uploadipfs.html, but the file's
+      type is confirmed by its actual bytes (lib/browser/mediaDetect.js),
+      and the file is compressed client-side before upload:
+        - image -> lib/browser/imageCompressor.js  (Canvas, no CDN dep)
+        - video -> lib/browser/videoCompressor.js  (ffmpeg.wasm, loaded
+          lazily from a CDN only once a video is actually selected)
+      Videos over MAX_DURATION_SEC are rejected up front, same hard rule
+      examplecompressbulk.js/importcompressedbulk.js enforce server-side —
+      checked via a native <video> element's metadata, before ffmpeg.wasm
+      is ever loaded.
+
+      Upload itself reuses http_queryipfs.js's QueryIpfs class unchanged —
+      the compression logic here doesn't touch the persist contract at all.
+    -->
+    <script src="http_queryipfs.js"></script>
+    <script src="lib/browser/mediaDetect.js"></script>
+    <script src="lib/browser/imageCompressor.js"></script>
+    <script src="lib/browser/videoCompressor.js"></script>
+    <script>
+        // Same hard rule as --max-duration's default in
+        // examplecompressbulk.js / importcompressedbulk.js.
+        const MAX_DURATION_SEC = 30;
+
+        // See uploadipfs.html for the fuller history of alternate
+        // endpoints tried during local dev; this one mirrors its currently
+        // active choice.
+        const RETRIEVE_IPFS_URL = 'http://localhost:9090/fs/persist';
+
+        const q = new QueryIpfs();
+
+        // Page state for the one file currently staged — set by
+        // handleFileSelected, read by handleCompressAndUpload.
+        let staged = null; // { file, kind, mime, probeInfo }
+
+        function setStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+        function appendLog(text) {
+            const log = document.getElementById('log');
+            log.textContent += text + '\n';
+            log.scrollTop = log.scrollHeight;
+        }
+        function setStats(sourceBytes, outputBytes, skippedReason) {
+            const el = document.getElementById('stats');
+            if (skippedReason) {
+                el.textContent = `${sourceBytes}B unchanged (${skippedReason})`;
+            } else {
+                const pct = sourceBytes > 0 ? (100 * (1 - outputBytes / sourceBytes)).toFixed(1) : '0.0';
+                el.textContent = `${sourceBytes}B -> ${outputBytes}B (${pct}% smaller)`;
+            }
+        }
+        function uploadAsync(blob) {
+            q.connect(RETRIEVE_IPFS_URL); // synchronous for the http client - fires isReady immediately
+            return new Promise((resolve, reject) => {
+                q.upload(blob, (event) => resolve(event.data)).catch(reject);
+            });
+        }
+
+        async function handleFileSelected(event) {
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true;
+            staged = null;
+            document.getElementById('cid').textContent = '';
+            document.getElementById('stats').textContent = '';
+            document.getElementById('log').textContent = '';
+
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                setStatus('detecting file type from its bytes…');
+                const detected = await MediaDetect.detectFile(file);
+                if (!detected.kind) {
+                    setStatus(`Could not recognize this file as an image or video (byte signature not in mediaDetect.js's table) — not uploading.`);
+                    return;
+                }
+
+                let probeInfo = null;
+                if (detected.kind === 'video') {
+                    setStatus('checking video duration before loading the compressor…');
+                    probeInfo = await BrowserVideoCompressor.probe(file);
+                    if (probeInfo.durationSec > MAX_DURATION_SEC) {
+                        setStatus(
+                            `Rejected: video is ${probeInfo.durationSec.toFixed(1)}s, over the ${MAX_DURATION_SEC}s limit — ` +
+                            `not compressed, not uploaded.`
+                        );
+                        return;
+                    }
+                }
+
+                staged = { file, kind: detected.kind, mime: detected.mime, probeInfo };
+                setStatus(`Detected ${detected.mime} (${detected.kind}), ${file.size}B. Ready to compress + upload.`);
+                uploadBtn.disabled = false;
+            } catch (err) {
+                console.error(err);
+                setStatus(`Error reading file: ${err.message}`);
+            }
+        }
+
+        async function handleCompressAndUpload() {
+            staged
+            if (!staged) return;
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.disabled = true;
+
+            try {
+                // Both compressors return the same shape
+                // ({ blob, mime, width, height, skipped, reason }), so the
+                // result is handled identically regardless of media kind —
+                // only which library gets called differs.
+                let result;
+                if (staged.kind === 'image') {
+                    setStatus('compressing image ...');
+                    result = await BrowserImageCompressor.compress(staged.file, { quality: 0.8, maxDim: 1920 });
+                } else {
+                    setStatus('loading video compressor (first video in this session downloads ffmpeg.wasm, ~30MB)…');
+                    result = await BrowserVideoCompressor.compress(staged.file, staged.probeInfo, {
+                        crf: 23,
+                        preset: 'veryfast',
+                        maxHeight: 1080,
+                        onLog: (message) => { setStatus('compressing video...........'); appendLog(message); },
+                    });
+                }
+                setStats(staged.file.size, result.blob.size, result.skipped ? result.reason : null);
+                setStatus('uploading…');
+                const cid = await uploadAsync(result.blob);
+                document.getElementById('cid').textContent = cid;
+                setStatus('done.');
+            } catch (err) {
+                console.error(err);
+                setStatus(`Error: ${err.message}`);
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        }
+
+        function handleReset() {
+            staged = null;
+            document.getElementById('inputFile').value = '';
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('status').textContent = '';
+            document.getElementById('stats').textContent = '';
+            document.getElementById('log').textContent = '';
+            document.getElementById('cid').textContent = '';
+        }
+    </script>
+    <body>
+
+            <label for="inputFile">Select image or video
+                <input id='inputFile' type="file" accept="image/*, video/*" onchange="handleFileSelected(event)"/>
+                <button id='uploadBtn' onclick="handleCompressAndUpload()" disabled>Compress &amp; Upload</button>
+                <button id='reset' type="button" onclick="handleReset()">Reset</button>
+            </label>
+
+            <p id='status'></p>
+            <p id='stats'></p>
+            <pre id='log' style="max-height:150px; overflow-y:auto; background:#111; color:#0f0; padding:4px; font-size:11px;"></pre>
+
+            CID: <div id='cid'></div>
+
+    </body>
+
+</html>
