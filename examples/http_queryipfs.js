@@ -27,8 +27,6 @@
 // against the proxy's actual HTTP routes before relying on this in anything
 // but local dev.
 
-const JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w"
-const HOST = "api.dev.microfrmr.com";
 // Ref: Observer observable
 // https://blog.bitsrc.io/the-observer-pattern-in-javascript-the-key-to-a-reactive-behavior-f28236e50e10
 class Observable {
@@ -65,6 +63,8 @@ class QueryIpfs extends Observable {
     constructor(){
         super();
         this.baseUrl = null;
+        this.jwtToken = null;
+        this.hostname = null;
         this.isReady = false;
         console.log('QueryIpfs (http) constructor inst=', this);
     }
@@ -72,13 +72,17 @@ class QueryIpfs extends Observable {
     // Unlike the WS version, connect() doesn't open anything - HTTP is
     // request/response, there's no handshake to wait on. It just records the
     // proxy's base URL (e.g. 'http://localhost:7071', no /retrieve or
-    // /persist suffix - query()/upload() pick the route) and fires the same
-    // "isReady" event the WS observers already key off of, so html callers
-    // don't need to branch on transport.
-    connect = (baseUrl) => {
+    // /persist suffix - query()/upload() pick the route), the auth token and
+    // the forwarded hostname (both required by the proxy on every request —
+    // see authHeaders()), and fires the same "isReady" event the WS
+    // observers already key off of, so html callers don't need to branch on
+    // transport.
+    connect = (baseUrl, jwtToken, hostname) => {
         console.log('connect baseUrl', baseUrl);
         //this.baseUrl = baseUrl.replace(/\/+$/, '');
         this.baseUrl = baseUrl;
+        this.jwtToken = jwtToken;
+        this.hostname = hostname;
         this.isReady = true;
         console.log('on connect ready=', this.isReady);
         this.notifyObservers(/*event=*/{
@@ -95,8 +99,8 @@ class QueryIpfs extends Observable {
     }
 
     authHeaders = (extra = {}) => ({
-        "Authorization": "Bearer " + JWT_ACCESS_TOKEN,
-        "X-Forwarded-Host": HOST,
+        "Authorization": "Bearer " + this.jwtToken,
+        "X-Forwarded-Host": this.hostname,
         ...extra,
     });
 

@@ -5,13 +5,9 @@
     <body>
         <script>
             this.q = new QueryIpfs();
-            //var PERSIST_IPFS_URL = 'ws://localhost:7071/retrieve'
-            //var PERSIST_IPFS_URL = 'ws://192.168.1.161:8080/ipfsproxy/retrieve'
-            //var PERSIST_IPFS_URL = 'ws://192.168.1.161:8080/retrieve'
-            //var PERSIST_IPFS_URL = 'ws://35.236.42.205:80/retrieve'
-            //var PERSIST_IPFS_URL = 'http://localhost:7071/retrieve'
-            var PERSIST_IPFS_URL = 'http://localhost:9090/fs/retrieve'
-            //var PERSIST_IPFS_URL = 'http://localhost:7073/api/v0/cat?arg='
+            var RETRIEVE_IPFS_URL = 'http://localhost:9090/fs/retrieve'
+            var JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w"
+            var HOST = "api.dev.microfrmr.com"
 
             const handleBuffer = async (dat) => {
                 console.log('handleBuffer ',dat);
@@ -77,7 +73,7 @@
 
                 console.log('Is Ready = ',this.q.getIsReady());
                 // Make connection to server
-                this.q.connect(PERSIST_IPFS_URL);
+                this.q.connect(RETRIEVE_IPFS_URL, JWT_ACCESS_TOKEN, HOST);
             }
         </script>
         <div>Enter CID</div>

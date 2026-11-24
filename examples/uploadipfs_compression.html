@@ -26,7 +26,9 @@
         // See uploadipfs.html for the fuller history of alternate
         // endpoints tried during local dev; this one mirrors its currently
         // active choice.
-        const RETRIEVE_IPFS_URL = 'http://localhost:9090/fs/persist';
+        const PERSIST_IPFS_URL = 'http://localhost:9090/fs/persist';
+        const JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w";
+        const HOST = "api.dev.microfrmr.com";
 
         const q = new QueryIpfs();
 
@@ -52,7 +54,7 @@
             }
         }
         function uploadAsync(blob) {
-            q.connect(RETRIEVE_IPFS_URL); // synchronous for the http client - fires isReady immediately
+            q.connect(PERSIST_IPFS_URL, JWT_ACCESS_TOKEN, HOST); // synchronous for the http client - fires isReady immediately
             return new Promise((resolve, reject) => {
                 q.upload(blob, (event) => resolve(event.data)).catch(reject);
             });

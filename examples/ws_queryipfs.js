@@ -2,7 +2,6 @@
 //const WebSocket = require('ws');
 
 // import {fileTypeFromBuffer} from 'file-type';
-const JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w"
 // Ref: Observer observable
 // https://blog.bitsrc.io/the-observer-pattern-in-javascript-the-key-to-a-reactive-behavior-f28236e50e10
 class Observable {
@@ -39,15 +38,25 @@ class QueryIpfs extends Observable {
     constructor(){
         super();
         this.ws;
+        this.jwtToken = null;
+        this.hostname = null;
         this.isReady = false;
         console.log('QueryIpfs constructor inst=', this);
     }
 
-    connect = (ipfproxyws) => {
+    // hostname is accepted for API parity with http_queryipfs.js's
+    // connect(url, jwtToken, hostname) — a browser WebSocket handshake
+    // can't carry a custom "X-Forwarded-Host" header the way a fetch()
+    // request can (see http_queryipfs.js's header comment), so it isn't
+    // sent to the server here; it's stored on the instance in case a
+    // caller or future transport needs it.
+    connect = (ipfproxyws, jwtToken, hostname) => {
 
         console.log('connect ipfproxyws', ipfproxyws);
         this.isReady = false;
-        this.ws = new  WebSocket(ipfproxyws,["Bearer",JWT_ACCESS_TOKEN]);
+        this.jwtToken = jwtToken;
+        this.hostname = hostname;
+        this.ws = new  WebSocket(ipfproxyws,["Bearer",jwtToken]);
          console.log('this.ws header=', this.ws);
         var parent = this;
         this.ws.addEventListener('message', function(event) {

@@ -64,8 +64,7 @@ const os = require('os');
 const crypto = require('crypto');
 const WebSocket = require('ws');
 
-const videoCompressor = require('./lib/videoCompressor');
-const imageCompressor = require('./lib/imageCompressor');
+const { videoCompressor, imageCompressor } = require('media-compressor');
 
 const rawArgs = require('minimist')(process.argv.slice(2));
 

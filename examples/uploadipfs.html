@@ -3,16 +3,9 @@
     <script src="http_queryipfs.js"></script>
     <script>
         this.q = new QueryIpfs();
-        //var RETRIEVE_IPFS_URL = 'ws://localhost:7071/persist'
-        //var RETRIEVE_IPFS_URL = 'ws://192.168.1.161:8080/ipfsproxy/persist'
-        //var RETRIEVE_IPFS_URL = 'ws://192.168.1.161:8080/persist'
-        //var RETRIEVE_IPFS_URL = 'http://35.236.42.205:80/persist'
-        //var RETRIEVE_IPFS_URL = 'http://192.168.1.139:8080/ws/persist'
-        //var RETRIEVE_IPFS_URL = 'http://192.168.1.139:8080/fs/persist' //causes cors exception
-        //var RETRIEVE_IPFS_URL = 'ws://localhost:9090/ws/persist?append_header_host=api.dev.microfrmr.com'
-        var RETRIEVE_IPFS_URL = 'http://localhost:9090/fs/persist'
-        //var RETRIEVE_IPFS_URL = 'http://localhost:7071/persist'
-        //var RETRIEVE_IPFS_URL = 'http://localhost:7073/api/v0/add?pin=true'
+        var PERSIST_IPFS_URL = 'http://localhost:9090/fs/persist'
+        var JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w"
+        var HOST = "api.dev.microfrmr.com"
 
         function uploadCallback(event){
             console.log('uploadCallback called event', event);
@@ -64,7 +57,7 @@
                 }
             };
             this.q.addObserver(new Pobserver());
-            this.q.connect(RETRIEVE_IPFS_URL);
+            this.q.connect(PERSIST_IPFS_URL, JWT_ACCESS_TOKEN, HOST);
         }
     </script>
     <body>
