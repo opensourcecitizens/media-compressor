@@ -5,7 +5,7 @@
 //
 // Video-only entry point. For a directory of mixed image + video files, use
 // importcompressedbulk.js instead — both files share the same encode logic via
-// lib/videoCompressor.js, so behavior here can't drift from there.
+// media-compressor's videoCompressor, so behavior here can't drift from there.
 //
 // Replaces the mp4video_ffmpeg_compression.js sketch (browser @ffmpeg/ffmpeg,
 // single file, CRF 0 "lossless" which is actually larger than source and

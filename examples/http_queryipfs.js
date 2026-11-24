@@ -190,63 +190,12 @@ class QueryIpfs extends Observable {
         });
     }
 
-    // TODO move to util file (see getAsByteArray note above)
-    // TODO cleanup video signature to detect 66747970 for mp4
-    // TODO detect mp3 and others
-    // reference : https://en.wikipedia.org/wiki/List_of_file_signatures
-    getMimeType = async(arrayBuffer) => {
-        const uint8arr = new Uint8Array(arrayBuffer).slice(0, 4); // Check only the first few bytes
-        let signature = '';
-        for (const byte of uint8arr) {
-            signature += byte.toString(16).padStart(2, '0'); // Convert to hex and pad
-        }
-        signature = signature.toUpperCase();
-        console.log(signature);
-        switch (signature) {
-            // Image types
-            case '89504E47': return 'image/png';
-            case '47494638': return 'image/gif';
-            case 'FFD8FFDB': case 'FFD8FFE0': case 'FFD8FFFE': case 'FFD8FFe1':
-            return 'image/jpeg';
-            // RIFF is a generic container (WebP, WAV, AVI, ...) - the form
-            // type at byte offset 8 is what actually says "WEBP". This is
-            // the format ipfsseed's bulk image compressor
-            // (lib/imageCompressor.js) prefers whenever the ffmpeg build it
-            // runs on has libwebp, which is the common case in Docker/apt-
-            // based deployments.
-            case '52494646': {
-                const formBytes = new Uint8Array(arrayBuffer).slice(8, 12);
-                let form = '';
-                for (const byte of formBytes) form += byte.toString(16).padStart(2, '0');
-                return form.toUpperCase() === '57454250' ? 'image/webp' : null;
-            }
-            // Video types (MP4 typically starts with '000000' followed by 'ftyp')
-            case '00000014': case '00000018':
-            if (signature.slice(6, 10) === '66747970') { // ftyp in hex
-               return 'video/mp4';
-            }
-            default:
-            let vidMime = () => {
-               let uint8arr2 = new Uint8Array(arrayBuffer).slice(4, 12);
-               signature = '';
-               for (const byte of uint8arr2) {
-                   signature += byte.toString(16).padStart(2, '0');
-               }
-               signature = signature.toUpperCase();
-               console.log('vidsignature',signature);
-               switch (signature) {
-                   case '6674797069736F6D':
-                   case '667479704D534E56':
-                   case '6674797071742020':
-                       return 'video/mp4';
-                   default: return null
-               };
-            };
-
-            return await vidMime();
-
-        }
-
-    }
+    // Byte-signature mime detection lives in MediaDetect now
+    // (src/browser/mediaDetect.js) — delegate instead of keeping a second,
+    // drifted copy of the same signature table here. Callers keep passing
+    // an ArrayBuffer, same as before; MediaDetect.detectMime does its own
+    // slicing internally. Requires mediaDetect.js to be loaded (<script src>)
+    // before this method is called.
+    getMimeType = async (arrayBuffer) => MediaDetect.detectMime(new Uint8Array(arrayBuffer));
 
 }

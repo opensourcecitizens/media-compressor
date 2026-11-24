@@ -2,18 +2,18 @@
 'use strict';
 
 // importcompressedbulk.js — bulk import for a directory of mixed image + video files:
-// probes each, compresses it with the matching library (lib/videoCompressor.js
-// or lib/imageCompressor.js), and optionally uploads the result to IPFS via
-// the ipfs-proxy.
+// probes each, compresses it with the matching library (media-compressor's
+// videoCompressor or imageCompressor), and optionally uploads the result to
+// IPFS via the ipfs-proxy.
 //
 // This is the mixed-media counterpart to examplecompressbulk.js (video-only, kept
 // for callers that only ever deal in video). Both files now share the same
-// compression logic through lib/videoCompressor.js so encode behavior can't
-// drift between the two entry points.
+// compression logic through media-compressor's videoCompressor so encode
+// behavior can't drift between the two entry points.
 //
-// File-type dispatch is by extension (lib/videoCompressor.js's
-// VIDEO_EXTENSIONS / lib/imageCompressor.js's IMAGE_EXTENSIONS). Anything
-// else is recorded as skipped_unsupported and left alone.
+// File-type dispatch is by extension (videoCompressor's VIDEO_EXTENSIONS /
+// imageCompressor's IMAGE_EXTENSIONS). Anything else is recorded as
+// skipped_unsupported and left alone.
 //
 // Videos carry the same hard rule as examplecompressbulk.js: anything longer than
 // --max-duration seconds (default 30) is probed, logged as an error, and
@@ -356,8 +356,8 @@ async function processImage(filePath, name, sourceHash, sourceBytes) {
 
   // requestedOutputPath's extension is a placeholder — imageCompressor picks
   // the real one (webp if the ffmpeg build supports it, otherwise a jpg/png/
-  // gif fallback; see lib/imageCompressor.js) and hands back the path it
-  // actually wrote.
+  // gif fallback; see media-compressor's imageCompressor) and hands back the
+  // path it actually wrote.
   const requestedOutputPath = path.join(CONFIG.out, `${path.parse(name).name}.webp`);
   const encodeResult = await imageCompressor.compress(filePath, requestedOutputPath, info, {
     ffmpegBin: CONFIG.ffmpegBin,

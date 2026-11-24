@@ -1,10 +1,10 @@
 <html>
     <!--
       uploadipfs_compression.html — like uploadipfs.html, but the file's
-      type is confirmed by its actual bytes (lib/browser/mediaDetect.js),
+      type is confirmed by its actual bytes (src/browser/mediaDetect.js),
       and the file is compressed client-side before upload:
-        - image -> lib/browser/imageCompressor.js  (Canvas, no CDN dep)
-        - video -> lib/browser/videoCompressor.js  (ffmpeg.wasm, loaded
+        - image -> src/browser/imageCompressor.js  (Canvas, no CDN dep)
+        - video -> src/browser/videoCompressor.js  (ffmpeg.wasm, loaded
           lazily from a CDN only once a video is actually selected)
       Videos over MAX_DURATION_SEC are rejected up front, same hard rule
       examplecompressbulk.js/importcompressedbulk.js enforce server-side —
@@ -15,9 +15,9 @@
       the compression logic here doesn't touch the persist contract at all.
     -->
     <script src="http_queryipfs.js"></script>
-    <script src="lib/browser/mediaDetect.js"></script>
-    <script src="lib/browser/imageCompressor.js"></script>
-    <script src="lib/browser/videoCompressor.js"></script>
+    <script src="../src/browser/mediaDetect.js"></script>
+    <script src="../src/browser/imageCompressor.js"></script>
+    <script src="../src/browser/videoCompressor.js"></script>
     <script>
         // Same hard rule as --max-duration's default in
         // examplecompressbulk.js / importcompressedbulk.js.
