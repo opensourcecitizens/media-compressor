@@ -20,10 +20,10 @@
 //
 // Upload contract is copy-pasted intentionally (not imported) to match the
 // two existing seed clients rather than invent a third shape:
-//   - ws://...   -> ws_queryipfs.js / importbulk.js: `${base}/persist`,
+//   - ws://...   -> ipfsconnector_ws.js / importbulk.js: `${base}/persist`,
 //                   subprotocol ["Bearer", token], raw binary send,
 //                   single text message reply = CID.
-//   - http(s)://... -> http_queryipfs.js: `${base}/fs/persist`,
+//   - http(s)://... -> ipfsconnector_http.js: `${base}/fs/persist`,
 //                   POST with Authorization: Bearer + X-Forwarded-Host,
 //                   octet-stream body, text() reply = CID.
 //
@@ -54,7 +54,7 @@
 //
 // Examples:
 //   node examplecompressbulk.js --thumbnails --upload
-//   node examplecompressbulk.js --in /ipfsseed/samples --ipfsproxy http://ipfs-proxy:7071 --upload
+//   node examplecompressbulk.js --in ./samples --ipfsproxy http://ipfs-proxy:7071 --upload
 //   node examplecompressbulk.js --deterministic --concurrency 1 --dry-run
 
 const fs = require('fs');
@@ -69,7 +69,7 @@ const { videoCompressor } = require('media-compressor');
 const rawArgs = require('minimist')(process.argv.slice(2));
 
 // Same dev-only fixed token the other ipfsseed/*.js clients ship with
-// (ws_queryipfs.js, http_queryipfs.js). Override via --jwt or env for
+// (ipfsconnector_ws.js, ipfsconnector_http.js). Override via --jwt or env for
 // anything beyond local docker-compose.
 const DEFAULT_JWT =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w';
@@ -150,7 +150,7 @@ async function collectFiles(dir, recursive) {
 }
 
 // ---------------------------------------------------------------------------
-// upload — mirrors importbulk.js (ws) / http_queryipfs.js (http) contracts
+// upload — mirrors importbulk.js (ws) / ipfsconnector_http.js (http) contracts
 // ---------------------------------------------------------------------------
 
 // Node's dual-stack connect (tried on a refused/unreachable ws:// host)

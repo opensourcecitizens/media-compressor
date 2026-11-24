@@ -6,7 +6,7 @@ const path = require('path');
 
 const args = require('minimist')(process.argv.slice(2));
 const ipfproxyws = args['ipfsproxy']?args['ipfsproxy']:'ws://localhost:7071'
-const dirPath = "/ipfsseed/samples"
+const dirPath = "./samples" // change this to your media location
 
 console.log("args ipfproxyws -> ipfproxyws: "+ipfproxyws);
 console.log("args dirPath : "+dirPath);
@@ -16,8 +16,6 @@ const ws = new  WebSocket(ipfproxyws+'/persist',{
 });
 
 ws.on('open', function open() {
-  //ws.send('something');
-  //ws.send('QmX7epzCn2jD8nPUDiehmZDQs69HxKYcmMGjd3rmnjd2Ht');
   //read directory
   console.log('on open');
   try {

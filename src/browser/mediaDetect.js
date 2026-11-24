@@ -15,8 +15,8 @@
 // check-sync.js's TARGETS, so it can't silently drift from the other five.
 //
 // Plain <script src> global (window.MediaDetect), no module system —
-// matches how every other file in this directory (http_queryipfs.js,
-// ws_queryipfs.js) is loaded by the *.html seed tools; there's no bundler
+// matches how every other file in this directory (ipfsconnector_http.js,
+// ipfsconnector_ws.js) is loaded by the *.html seed tools; there's no bundler
 // here to hand an ES module to.
 
 (function (global) {
@@ -73,21 +73,32 @@
   }
 
   /**
+   * Reads `file` (a File/Blob) into a Uint8Array of its full contents.
+   * The one shared FileReader-to-bytes implementation — detectFile below
+   * uses it (sliced to the first 12 bytes) instead of duplicating the
+   * reader setup, and IpfsConnector's getAsByteArray (ipfsconnector_http.js /
+   * ipfsconnector_ws.js, used by uploadipfs.html before an upload) delegates
+   * here instead of keeping its own copy.
+   */
+  function getAsByteArray(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener('loadend', (e) => resolve(new Uint8Array(e.target.result)));
+      reader.addEventListener('error', () => reject(reader.error || new Error('failed to read file')));
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  /**
    * Reads just enough of `file` (a File/Blob) to run byte-signature
    * detection — 12 bytes covers every format in the switch above, so this
    * never reads the whole file just to classify it.
    * Resolves { mime, kind } — both null when the bytes aren't recognized.
    */
   function detectFile(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const bytes = new Uint8Array(reader.result);
-        const mime = detectMime(bytes);
-        resolve({ mime: mime, kind: detectMediaKind(mime) });
-      };
-      reader.onerror = () => reject(reader.error || new Error('failed to read file header'));
-      reader.readAsArrayBuffer(file.slice(0, 12));
+    return getAsByteArray(file.slice(0, 12)).then((bytes) => {
+      const mime = detectMime(bytes);
+      return { mime: mime, kind: detectMediaKind(mime) };
     });
   }
 
@@ -95,5 +106,6 @@
     detectMime: detectMime,
     detectMediaKind: detectMediaKind,
     detectFile: detectFile,
+    getAsByteArray: getAsByteArray,
   };
 })(typeof window !== 'undefined' ? window : this);

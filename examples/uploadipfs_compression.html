@@ -11,10 +11,10 @@
       checked via a native <video> element's metadata, before ffmpeg.wasm
       is ever loaded.
 
-      Upload itself reuses http_queryipfs.js's QueryIpfs class unchanged —
+      Upload itself reuses ipfsconnector_http.js's IpfsConnector class unchanged —
       the compression logic here doesn't touch the persist contract at all.
     -->
-    <script src="http_queryipfs.js"></script>
+    <script src="lib/connectors/ipfsconnector_http.js"></script>
     <script src="../src/browser/mediaDetect.js"></script>
     <script src="../src/browser/imageCompressor.js"></script>
     <script src="../src/browser/videoCompressor.js"></script>
@@ -30,7 +30,7 @@
         const JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w";
         const HOST = "api.dev.microfrmr.com";
 
-        const q = new QueryIpfs();
+        const q = new IpfsConnector();
 
         // Page state for the one file currently staged — set by
         // handleFileSelected, read by handleCompressAndUpload.

@@ -1,6 +1,6 @@
 'use strict';
 
-// HTTP counterpart to ws_queryipfs.js — same public surface (connect / close /
+// HTTP counterpart to ipfsconnector_ws.js — same public surface (connect / close /
 // query / upload / getIsReady / getMimeType / getAsByteArray) so queryipfs.html
 // and uploadipfs.html can swap script src + endpoint and keep their Observer
 // wiring unchanged.
@@ -23,7 +23,7 @@
 // contract in this repo (docker-compose.yml exposes 7071 request / 7072
 // health). The /retrieve/:cid and /persist REST routes below are this file's
 // best-effort mirror of that WS contract, same spirit as the speculative
-// commented-out URLs already left in ws_queryipfs.js / *.html — confirm
+// commented-out URLs already left in ipfsconnector_ws.js / *.html — confirm
 // against the proxy's actual HTTP routes before relying on this in anything
 // but local dev.
 
@@ -59,14 +59,14 @@ class Observer {
     }
 };
 
-class QueryIpfs extends Observable {
+class IpfsConnector extends Observable {
     constructor(){
         super();
         this.baseUrl = null;
         this.jwtToken = null;
         this.hostname = null;
         this.isReady = false;
-        console.log('QueryIpfs (http) constructor inst=', this);
+        console.log('IpfsConnector (http) constructor inst=', this);
     }
 
     // Unlike the WS version, connect() doesn't open anything - HTTP is
@@ -148,54 +148,4 @@ class QueryIpfs extends Observable {
     getIsReady = () => {
         return this.isReady;
     }
-
-    // unused
-    arrayBufferToBase64_large = (buffer) => {
-        const bytes = new Uint8Array(buffer);
-        const binary = bytes.reduce((data, byte) => data + String.fromCharCode(byte), '');
-        return window.btoa(binary);
-    }
-    // unused
-    arrayBufferToBase64Async = (buffer) => {
-        return new Promise((resolve, reject) => {
-            const blob = new Blob([buffer], { type: 'application/octet-stream' });
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const dataUrl = event.target.result;
-                // Extract the base64 string part from the Data URL
-                const base64 = dataUrl.split(',')[1];
-                resolve(base64);
-            };
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(blob);
-        });
-    }
-
-    // TODO move to util file (duplicated from ws_queryipfs.js - both files
-    // are loaded standalone via <script src> in the *.html seed tools, no
-    // module system in play, so this stays copy/pasted until that changes)
-    getAsByteArray = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.addEventListener("loadend", (e) => {
-                const arrayBuffer = e.target.result;
-                const uint8Array = new Uint8Array(arrayBuffer);
-                resolve(uint8Array);
-            });
-
-            reader.addEventListener("error", reject);
-
-            reader.readAsArrayBuffer(file);
-        });
-    }
-
-    // Byte-signature mime detection lives in MediaDetect now
-    // (src/browser/mediaDetect.js) — delegate instead of keeping a second,
-    // drifted copy of the same signature table here. Callers keep passing
-    // an ArrayBuffer, same as before; MediaDetect.detectMime does its own
-    // slicing internally. Requires mediaDetect.js to be loaded (<script src>)
-    // before this method is called.
-    getMimeType = async (arrayBuffer) => MediaDetect.detectMime(new Uint8Array(arrayBuffer));
-
 }

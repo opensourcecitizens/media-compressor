@@ -1,8 +1,9 @@
 <html>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-    <script src="http_queryipfs.js"></script>
+    <script src="../src/browser/mediaDetect.js"></script>
+    <script src="lib/connectors/ipfsconnector_http.js"></script>
     <script>
-        this.q = new QueryIpfs();
+        this.q = new IpfsConnector();
         var PERSIST_IPFS_URL = 'http://localhost:9090/fs/persist'
         var JWT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w"
         var HOST = "api.dev.microfrmr.com"
@@ -22,7 +23,7 @@
             var uploadBtn = document.getElementById("uploadBtn");
             console.log('upload window.uploadBtn.:', uploadBtn);
             if(file){
-                parent.q.getAsByteArray(file).then((dat)=>{
+                MediaDetect.getAsByteArray(file).then((dat)=>{
                     uploadBtn.disabled=false;
                     parent.data = dat;
                 });

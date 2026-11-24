@@ -54,7 +54,7 @@
 //
 // Examples:
 //   node importcompressedbulk.js --thumbnails --upload
-//   node importcompressedbulk.js --in /ipfsseed/samples --ipfsproxy http://ipfs-proxy:7071 --upload
+//   node importcompressedbulk.js --in ./samples --ipfsproxy http://ipfs-proxy:7071 --upload
 //   node importcompressedbulk.js --dry-run --recursive
 
 const fs = require('fs');
@@ -69,7 +69,7 @@ const { videoCompressor, imageCompressor } = require('media-compressor');
 const rawArgs = require('minimist')(process.argv.slice(2));
 
 // Same dev-only fixed token the other ipfsseed/*.js clients ship with
-// (ws_queryipfs.js, http_queryipfs.js, examplecompressbulk.js).
+// (ipfsconnector_ws.js, ipfsconnector_http.js, examplecompressbulk.js).
 //const DEFAULT_JWT =
 //  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w';
 const DEFAULT_JWT='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTYzODY1OSwiZXhwIjoxNzkwODIyNjU5fQ.eboYRr4LRWcnXFig0zMWkWvZY2a43lYLRhJUiBkbbCw'
@@ -178,7 +178,7 @@ async function collectFiles(dir, recursive) {
 }
 
 // ---------------------------------------------------------------------------
-// upload — mirrors importbulk.js (ws) / http_queryipfs.js (http) contracts
+// upload — mirrors importbulk.js (ws) / ipfsconnector_http.js (http) contracts
 // ---------------------------------------------------------------------------
 
 // Node's dual-stack connect (tried on a refused/unreachable ws:// host)
