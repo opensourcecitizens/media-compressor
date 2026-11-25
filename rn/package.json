@@ -1,0 +1,12 @@
+{
+  "name": "media-compressor-rn",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "peerDependencies": {
+    "react-native": "*",
+    "react-native-compressor": ">=1.8.0"
+  },
+  "files": [
+    "src"
+  ]
+}
