@@ -6,7 +6,7 @@
         - image -> src/browser/imageCompressor.js  (Canvas, no CDN dep)
         - video -> src/browser/videoCompressor.js  (ffmpeg.wasm, loaded
           lazily from a CDN only once a video is actually selected)
-      Videos over MAX_DURATION_SEC are rejected up front, same hard rule
+      Videos over MAX_UPLOAD_VIDEO_DURATION_SEC are rejected up front, same hard rule
       examplecompressbulk.js/importcompressedbulk.js enforce server-side —
       checked via a native <video> element's metadata, before ffmpeg.wasm
       is ever loaded.
@@ -21,7 +21,7 @@
     <script>
         // Same hard rule as --max-duration's default in
         // examplecompressbulk.js / importcompressedbulk.js.
-        const MAX_DURATION_SEC = 30;
+        const MAX_UPLOAD_VIDEO_DURATION_SEC = 30;
 
         // See uploadipfs.html for the fuller history of alternate
         // endpoints tried during local dev; this one mirrors its currently
@@ -83,9 +83,9 @@
                 if (detected.kind === 'video') {
                     setStatus('checking video duration before loading the compressor…');
                     probeInfo = await BrowserVideoCompressor.probe(file);
-                    if (probeInfo.durationSec > MAX_DURATION_SEC) {
+                    if (probeInfo.durationSec > MAX_UPLOAD_VIDEO_DURATION_SEC) {
                         setStatus(
-                            `Rejected: video is ${probeInfo.durationSec.toFixed(1)}s, over the ${MAX_DURATION_SEC}s limit — ` +
+                            `Rejected: video is ${probeInfo.durationSec.toFixed(1)}s, over the ${MAX_UPLOAD_VIDEO_DURATION_SEC}s limit — ` +
                             `not compressed, not uploaded.`
                         );
                         return;
