@@ -11,7 +11,7 @@
     "file-type": "^21.3.4",
     "ipfs-http-client": "^56.0.3",
     "jsonwebtoken": "^9.0.3",
-    "media-compressor": "file:..",
+    "media-compressor": "npm:media-compressor-js@0.0.1",
     "minimist": "^1.2.0",
     "react": "^18.0.0",
     "react-test-renderer": "^18.3.1",

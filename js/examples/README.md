@@ -1,6 +1,6 @@
 # media-compressor-js examples
 
-Runnable demonstrations of using `media-compressor` as a real dependency — not a demo *of* the library's internals, but of what consuming it actually looks like. `package.json` depends on it via `"media-compressor": "file:.."`, the same as any published dependency would be referenced, so every script here does `require('media-compressor')` rather than reaching into `../src`.
+Runnable demonstrations of using `media-compressor` as a real dependency — not a demo *of* the library's internals, but of what consuming it actually looks like. `package.json` depends on it via `"media-compressor": "npm:media-compressor-js@0.0.1"` — a real install from the npm registry, aliased back to the shorter `media-compressor` name so every script here can do `require('media-compressor')` rather than reaching into `../src` or spelling out the published `media-compressor-js` name everywhere.
 
 ## Setup
 
