@@ -2,8 +2,9 @@
   "name": "media-compressor-examples",
   "private": true,
   "scripts": {
-    "compress:bulk": "node examplecompressbulk.js",
-    "compress:bulk:dry": "node examplecompressbulk.js --dry-run"
+    "compress:bulk": "node node/examplecompressbulk.js",
+    "compress:bulk:dry": "node node/examplecompressbulk.js --dry-run",
+    "react:demo": "node react/usage.js"
   },
   "dependencies": {
     "buffer": "^6.0.3",
@@ -12,6 +13,8 @@
     "jsonwebtoken": "^9.0.3",
     "media-compressor": "file:..",
     "minimist": "^1.2.0",
+    "react": "^18.0.0",
+    "react-test-renderer": "^18.3.1",
     "ws": "^8.21.3"
   }
 }

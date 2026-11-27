@@ -1,9 +1,8 @@
 'use strict';
 
-// HTTP counterpart to ipfsconnector_ws.js — same public surface (connect / close /
-// query / upload / getIsReady / getMimeType / getAsByteArray) so queryipfs.html
-// and uploadipfs.html can swap script src + endpoint and keep their Observer
-// wiring unchanged.
+// HTTP counterpart to ipfsconnector_ws.js — same public surface (connect /
+// close / query / upload / getIsReady) so queryipfs.html and uploadipfs.html
+// can swap script src + endpoint and keep their Observer wiring unchanged.
 //
 // Auth: the WS version has to smuggle the JWT in as a subprotocol
 // (new WebSocket(url, ["Bearer", token])) because the WS handshake can't carry

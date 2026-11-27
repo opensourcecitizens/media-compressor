@@ -10,8 +10,8 @@ Image and video compression for Node, the browser, and React Native — compress
 
 ## Repo layout
 
-- **[`js/`](js/README.md)** — Node and browser compressors, built on `ffmpeg`/`ffprobe` (Node) and Canvas/ffmpeg.wasm (browser).
-- **[`rn/`](rn/README.md)** — React Native compressor, built on the native module `react-native-compressor`.
+- **[`js/`](js/README.md)** — Node and browser compressors, built on `ffmpeg`/`ffprobe` (Node) and Canvas/ffmpeg.wasm (browser). Ships with a full [`examples/`](js/examples/README.md) suite that consumes the library the way a real dependent would (`require('media-compressor')`, never a reach into its source): CLI bulk-compress scripts, zero-build HTML demo pages, an `IpfsConnector` for proxy I/O, and an example React component.
+- **[`rn/`](rn/README.md)** — React Native compressor, built on the native module `react-native-compressor`, plus a scaffolded Expo `example/` app used to verify its API against the real installed package rather than against memory.
 
 ## Why both `js/` and `rn/`
 

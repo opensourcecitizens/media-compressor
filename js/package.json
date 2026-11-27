@@ -1,6 +1,8 @@
 {
   "name": "media-compressor-js",
   "version": "0.0.1",
+  "description": "Image and video compression for Node and the browser, built on ffmpeg/ffprobe (Node) and Canvas/ffmpeg.wasm (browser).",
+  "license": "MIT",
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
@@ -13,5 +15,23 @@
   ],
   "scripts": {
     "test": "node --test"
-  }
+  },
+  "keywords": [
+    "image-compression",
+    "video-compression",
+    "ffmpeg",
+    "ffprobe",
+    "canvas",
+    "ffmpeg-wasm",
+    "ipfs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opensourcecitizens/media-compressor.git",
+    "directory": "js"
+  },
+  "bugs": {
+    "url": "https://github.com/opensourcecitizens/media-compressor/issues"
+  },
+  "homepage": "https://github.com/opensourcecitizens/media-compressor/tree/main/js#readme"
 }

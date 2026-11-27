@@ -102,10 +102,22 @@
     });
   }
 
-  global.MediaDetect = {
+  const MediaDetect = {
     detectMime: detectMime,
     detectMediaKind: detectMediaKind,
     detectFile: detectFile,
     getAsByteArray: getAsByteArray,
   };
+
+  global.MediaDetect = MediaDetect;
+
+  // Also exported via module.exports (in addition to, not instead of, the
+  // window global above) so bundler-based code — e.g. src/react's
+  // ImageViewer — can `require`/`import` this file directly instead of
+  // depending on load order and a shared global. The *.html seed tools
+  // still load this as a plain <script src> global; this branch is a
+  // no-op there (no `module` global exists in that context).
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = MediaDetect;
+  }
 })(typeof window !== 'undefined' ? window : this);
