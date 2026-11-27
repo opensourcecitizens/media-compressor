@@ -75,9 +75,9 @@ const rawArgs = require('minimist')(process.argv.slice(2));
 const DEFAULT_JWT='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTYzODY1OSwiZXhwIjoxNzkwODIyNjU5fQ.eboYRr4LRWcnXFig0zMWkWvZY2a43lYLRhJUiBkbbCw'
 
 const CONFIG = {
-  in: rawArgs['in'] || path.join(__dirname, 'samples'),
-  out: rawArgs['out'] || path.join(__dirname, 'imported'),
-  manifest: rawArgs['manifest'] || path.join(__dirname, 'import-manifest.json'),
+  in: rawArgs['in'] || path.join(__dirname, '..', 'samples'),
+  out: rawArgs['out'] || path.join(__dirname, '..', 'imported'),
+  manifest: rawArgs['manifest'] || path.join(__dirname, '..', 'import-manifest.json'),
   recursive: Boolean(rawArgs['recursive']),
   concurrency: toInt(rawArgs['concurrency'], Math.max(1, Math.floor(os.cpus().length / 4))),
   jobTimeoutMs: toInt(rawArgs['job-timeout'], 10 * 60 * 1000),

@@ -75,9 +75,9 @@ const DEFAULT_JWT =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InVzZXJfMTIzNDUiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJwdWJsaWNLZXkiOiJldGNldGMiLCJyb2xlcyI6WyJ1c2VyIl0sImlhdCI6MTc4NTcxMzY3OSwiZXhwIjoxNzg4MzA1Njc5fQ.KW0hN8XpaoeKB7q9-DYPEhhkHMPyzHUIBrUZIWjAf1w';
 
 const CONFIG = {
-  in: rawArgs['in'] || path.join(__dirname, 'samples'),
-  out: rawArgs['out'] || path.join(__dirname, 'compressed'),
-  manifest: rawArgs['manifest'] || path.join(__dirname, 'manifest.json'),
+  in: rawArgs['in'] || path.join(__dirname, '..', 'samples'),
+  out: rawArgs['out'] || path.join(__dirname, '..', 'compressed'),
+  manifest: rawArgs['manifest'] || path.join(__dirname, '..', 'manifest.json'),
   recursive: Boolean(rawArgs['recursive']),
   concurrency: toInt(rawArgs['concurrency'], Math.max(1, Math.floor(os.cpus().length / 4))),
   crf: toInt(rawArgs['crf'], 22),
